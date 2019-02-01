@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="03" author="oleksii.volkov">
+        <createTable tableName="ochat_user_channel">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="int"/>
+            <column name="channel_id" type="int"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="ochat_user_channel"
+                                 constraintName="fk_user_id_users_table_id"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="ochat_users"/>
+
+        <addForeignKeyConstraint baseColumnNames="channel_id"
+                                 baseTableName="ochat_user_channel"
+                                 constraintName="fk_channel_id_channels_table_id"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="ochat_channels"/>
+    </changeSet>
+</databaseChangeLog>

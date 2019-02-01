@@ -1,0 +1,6 @@
+#MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/octo_chat_server
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.testWhileIdle = true
+spring.datasource.validationQuery = SELECT 1
