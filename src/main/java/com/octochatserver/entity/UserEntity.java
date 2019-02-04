@@ -1,13 +1,15 @@
 package com.octochatserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.octochatserver.util.Views;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -25,7 +27,7 @@ public class UserEntity {
     private Timestamp registeredDate;
     private Timestamp modifiedDate;
     //private UserPreferencesEntity userPreferences;
-    private Set<UserChannelEntity> userChannels;
+    private Set<SpaceEntity> userSpaces;
     //private Set<UserChatEntity> userChats;
 
     public static final String WRONG_CREDENTIALS = "Wrong credentials";
@@ -93,6 +95,7 @@ public class UserEntity {
     }
 
     @Transient
+    @JsonView(Views.Middle.class)
     public String getToken() {
         return token;
     }
@@ -127,15 +130,15 @@ public class UserEntity {
 //        this.userPreferences = userPreferences;
 //    }
 
-    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "octo_user_channel", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "channel_id")})
-    public Set<UserChannelEntity> getUserChannels() {
-        return userChannels;
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JoinTable(name = "ochat_user_space", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "space_id", referencedColumnName = "id")})
+    public Set<SpaceEntity> getUserSpaces() {
+        return userSpaces;
     }
 
-    public void setUserChannels(Set<UserChannelEntity> userChannels) {
-        this.userChannels = userChannels;
+    public void setUserSpaces(Set<SpaceEntity> userSpaces) {
+        this.userSpaces = userSpaces;
     }
 
 //    public Set<UserChatEntity> getUserChats() {
@@ -145,4 +148,29 @@ public class UserEntity {
 //    public void setUserChats(Set<UserChatEntity> userChats) {
 //        this.userChats = userChats;
 //    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserEntity that = (UserEntity) o;
+        return id == that.id &&
+            Objects.equals(firstName, that.firstName) &&
+            Objects.equals(secondName, that.secondName) &&
+            Objects.equals(middleName, that.middleName) &&
+            nickname.equals(that.nickname) &&
+            email.equals(that.email) &&
+            Objects.equals(password, that.password) &&
+            registeredDate.equals(that.registeredDate) &&
+            modifiedDate.equals(that.modifiedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, secondName, middleName, nickname, email, password, registeredDate, modifiedDate);
+    }
 }

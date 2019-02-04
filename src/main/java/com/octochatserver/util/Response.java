@@ -48,4 +48,12 @@ public class Response {
     public String toJSON() throws JsonProcessingException {
         return new ObjectMapper().writerWithView(Views.Normal.class).writeValueAsString(response);
     }
+
+    public String toJSONMiddle() throws JsonProcessingException {
+        return new ObjectMapper().writerWithView(Views.Middle.class).writeValueAsString(response);
+    }
+
+    public String toJSONManager() throws JsonProcessingException {
+        return new ObjectMapper().writerWithView(Views.Manager.class).writeValueAsString(response);
+    }
 }
