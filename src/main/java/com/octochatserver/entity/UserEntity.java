@@ -130,8 +130,8 @@ public class UserEntity {
 //        this.userPreferences = userPreferences;
 //    }
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JoinTable(name = "ochat_user_space", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "space_id", referencedColumnName = "id")})
     public Set<SpaceEntity> getUserSpaces() {
         return userSpaces;

@@ -65,7 +65,7 @@ public class SpaceEntity {
     }
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "userSpaces")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     public Set<UserEntity> getSpaceUsers() {
         return spaceUsers;
     }
