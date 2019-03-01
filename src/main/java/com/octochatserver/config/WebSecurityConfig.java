@@ -8,26 +8,26 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static com.octochatserver.config.AppConfig.REGISTER_URL;
 import static com.octochatserver.entity.UserEntity.WRONG_CREDENTIALS;
+import static com.octochatserver.entity.UserEntity.UNAUTHORIZED;
 
 @Configuration
-@EnableWebMvc
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -45,17 +45,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
             .and()
             .cors()
-            .and()
 
+            .and()
             .exceptionHandling()
-            .authenticationEntryPoint(
+            .defaultAuthenticationEntryPointFor(
                 (request, response, exception) -> {
                     response.setContentType("html/text");
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.setStatus(HttpStatus.BAD_REQUEST.value());
                     response.getWriter().print(WRONG_CREDENTIALS);
-                }
+                },
+                new AntPathRequestMatcher("/login")
+            )
+            .defaultAuthenticationEntryPointFor(
+                (request, response, exception) -> {
+                    response.setContentType("html/text");
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.getWriter().print(UNAUTHORIZED);
+                },
+                new AntPathRequestMatcher("/user/**")
             )
 
             .and()
@@ -63,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilter(new JWTAuthorizationFilter(authenticationManager()))
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, REGISTER_URL).permitAll()
-            .antMatchers(chatEndpoint + "/**").authenticated()
+            .antMatchers(chatEndpoint + "/**").permitAll()
             .anyRequest().authenticated();
     }
 
@@ -77,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
+        configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));

@@ -1,5 +1,6 @@
 package com.octochatserver.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,22 +35,27 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
+        UsernamePasswordAuthenticationToken authentication = getAuthentication(request.getHeader(HEADER_STRING));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(HEADER_STRING);
+    public static UsernamePasswordAuthenticationToken getAuthentication(String token) {
 
         if (token != null) {
-            String user = Jwts.parser()
-                .setSigningKey(SECRET.getBytes())
-                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                .getBody()
-                .getSubject();
+            String user;
+
+            try {
+                user = Jwts.parser()
+                    .setSigningKey(SECRET.getBytes())
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .getBody()
+                    .getSubject();
+            } catch (ExpiredJwtException e) {
+                user = null;
+            }
 
             if (user != null) {
                 return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());

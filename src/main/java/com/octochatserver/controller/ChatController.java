@@ -22,14 +22,13 @@ public class ChatController {
 
     @MessageMapping("/chat.message")
     public void message(@Payload MessageEntity message, Principal principal) {
-        message.setSender(principal.getName());
-        messagingTemplate.convertAndSend("/chatrooms/" + message.getChatRoom() + "/general", message);
+        messagingTemplate.convertAndSend("/chatrooms/" + message.getSpace().getName(), message);
     }
 
     @MessageMapping("/chat.add")
     public void add(@Payload MessageEntity message, Principal principal) {
-        message.setSender(principal.getName());
-        messagingTemplate.convertAndSend("/chatrooms/" + message.getChatRoom() + "/general", message);
+        message.getMessage();
+        //messagingTemplate.convertAndSend("/chatrooms/" + message.getChatRoom() + "/general", message);
     }
 
     @MessageExceptionHandler

@@ -2,6 +2,8 @@ package com.octochatserver.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,6 +12,8 @@ public class Response {
     private static final String DATA = "data";
     private static final String ERROR = "error";
     private static final String SUCCESS = "success";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
 
     private Map<String, Object> response;
 
@@ -45,15 +49,54 @@ public class Response {
         return response;
     }
 
-    public String toJSON() throws JsonProcessingException {
-        return new ObjectMapper().writerWithView(Views.Normal.class).writeValueAsString(response);
+    public String toJSON() {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            result.append(
+                new ObjectMapper()
+                    .writerWithView(Views.Normal.class)
+                    .withDefaultPrettyPrinter()
+                    .writeValueAsString(response)
+            );
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return result.toString();
     }
 
-    public String toJSONMiddle() throws JsonProcessingException {
-        return new ObjectMapper().writerWithView(Views.Middle.class).writeValueAsString(response);
+    public String toJSONMiddle() {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            result.append(
+                new ObjectMapper()
+                    .writerWithView(Views.Middle.class)
+                    .withDefaultPrettyPrinter()
+                    .writeValueAsString(response)
+            );
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return result.toString();
     }
 
-    public String toJSONManager() throws JsonProcessingException {
-        return new ObjectMapper().writerWithView(Views.Manager.class).writeValueAsString(response);
+    public String toJSONHeight() {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            result.append(
+                new ObjectMapper()
+                    .writerWithView(Views.Height.class)
+                    .withDefaultPrettyPrinter()
+                    .writeValueAsString(response)
+            );
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return result.toString();
     }
 }

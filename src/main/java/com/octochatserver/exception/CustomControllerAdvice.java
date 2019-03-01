@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Map;
-
 @RestController
 @ControllerAdvice
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
@@ -20,7 +18,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(buildResponse(null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Map<String, Object> buildResponse(String message) {
+    private String buildResponse(String message) {
         Response response = new Response();
 
         if (message == null) {
@@ -30,6 +28,6 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         response.failure();
         response.error(message);
 
-        return response.toMap();
+        return response.toJSON();
     }
 }

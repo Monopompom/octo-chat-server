@@ -1,6 +1,5 @@
 package com.octochatserver.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.octochatserver.entity.UserEntity;
 import com.octochatserver.service.UserService;
 import com.octochatserver.util.Response;
@@ -20,7 +19,7 @@ public class UserRestController {
 
     @PostMapping(path = "/register")
     public @ResponseBody
-    String register(@RequestBody UserEntity user) throws JsonProcessingException {
+    String register(@RequestBody UserEntity user) {
         Response response = new Response();
 
         if (userService.getByEmail(user.getEmail()) != null) {
@@ -47,7 +46,7 @@ public class UserRestController {
 
     @GetMapping(path = "/{id}")
     public @ResponseBody
-    String getUser(@PathVariable int id) throws JsonProcessingException {
+    String getUser(@PathVariable int id) {
         Response response = new Response();
 
         UserEntity user = userService.get(id);

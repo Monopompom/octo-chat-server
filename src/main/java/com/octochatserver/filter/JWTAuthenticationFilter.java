@@ -9,12 +9,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,7 +36,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(
         HttpServletRequest request,
         HttpServletResponse response
-    ) throws AuthenticationException {
+    ) {
 
         try {
             UserEntity atempter = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
@@ -62,22 +60,28 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         HttpServletResponse response,
         FilterChain chain,
         Authentication authentication
-    ) throws IOException, ServletException {
-        Response _response = new Response();
-        String token = Jwts.builder()
-            .setSubject(((User) authentication.getPrincipal()).getUsername())
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
-            .compact();
-        UserEntity user = userService.getByEmail(((User) authentication.getPrincipal()).getUsername());
+    ) {
 
-        user.setToken(token);
+        try {
+            Response backResponse = new Response();
+            String token = Jwts.builder()
+                .setSubject(((User) authentication.getPrincipal()).getUsername())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
+                .compact();
+            UserEntity user = userService.getByEmail(((User) authentication.getPrincipal()).getUsername());
 
-        _response.success();
-        _response.data(user);
+            user.setToken(token);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(_response.toJSONMiddle());
+            backResponse.success();
+            backResponse.data(user);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(backResponse.toJSONMiddle());
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -4,5 +4,9 @@ import com.octochatserver.entity.SpaceEntity;
 
 public interface SpaceService {
 
-    SpaceEntity save(SpaceEntity channel);
+    SpaceEntity get(int id);
+
+    SpaceEntity getByName(String name);
+
+    SpaceEntity save(SpaceEntity space);
 }

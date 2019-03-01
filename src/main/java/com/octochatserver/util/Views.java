@@ -6,5 +6,5 @@ public class Views {
 
 	public static class Middle extends Normal{};
 
-	public static class Manager extends Middle{};
+	public static class Height extends Middle{};
 }

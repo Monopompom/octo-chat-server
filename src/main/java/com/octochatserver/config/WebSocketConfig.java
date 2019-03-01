@@ -2,7 +2,6 @@ package com.octochatserver.config;
 
 import com.octochatserver.interceptor.AuthChannelInterceptorAdapter;
 import com.octochatserver.interceptor.HttpHandshakeInterceptor;
-import com.octochatserver.service.WebSocketAuthenticatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -36,18 +35,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private HttpHandshakeInterceptor handshakeInterceptor;
 
-    @Autowired
-    private WebSocketAuthenticatorService webSocketAuthenticatorService;
-
     @Override
-    public void configureMessageBroker(final MessageBrokerRegistry config) {
+    public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker(broker);
         config.setApplicationDestinationPrefixes(appPrefix);
         config.setUserDestinationPrefix(userPrefix);
     }
 
     @Override
-    public void registerStompEndpoints(final StompEndpointRegistry registry) {
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint(chatEndpoint)
             .addInterceptors(handshakeInterceptor);
 
@@ -58,7 +54,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void configureClientInboundChannel(final ChannelRegistration registration) {
-        registration.interceptors(new AuthChannelInterceptorAdapter(this.webSocketAuthenticatorService));
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new AuthChannelInterceptorAdapter());
     }
 }

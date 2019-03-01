@@ -22,7 +22,7 @@
                                  baseTableName="ochat_user_space"
                                  constraintName="fk_user_id_users_table_id"
                                  onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
+                                 onUpdate="CASCADE"
                                  referencedColumnNames="id"
                                  referencedTableName="ochat_users"/>
 
@@ -30,7 +30,7 @@
                                  baseTableName="ochat_user_space"
                                  constraintName="fk_space_id_spaces_table_id"
                                  onDelete="RESTRICT"
-                                 onUpdate="RESTRICT"
+                                 onUpdate="CASCADE"
                                  referencedColumnNames="id"
                                  referencedTableName="ochat_spaces"/>
     </changeSet>

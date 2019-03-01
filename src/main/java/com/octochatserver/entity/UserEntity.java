@@ -1,14 +1,13 @@
 package com.octochatserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.octochatserver.util.Views;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,16 +26,18 @@ public class UserEntity {
     private Timestamp registeredDate;
     private Timestamp modifiedDate;
     //private UserPreferencesEntity userPreferences;
-    private Set<SpaceEntity> userSpaces;
+    private Set<SpaceEntity> userSpaces = new HashSet<>();
     //private Set<UserChatEntity> userChats;
 
     public static final String WRONG_CREDENTIALS = "Wrong credentials";
+    public static final String UNAUTHORIZED = "Unauthorized";
 
     public enum UserRole {
         MEMBER, ADMIN
     }
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -85,7 +86,7 @@ public class UserEntity {
         this.email = email;
     }
 
-    @JsonView(Views.Manager.class)
+    @JsonView(Views.Height.class)
     public String getPassword() {
         return password;
     }
@@ -130,9 +131,7 @@ public class UserEntity {
 //        this.userPreferences = userPreferences;
 //    }
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JoinTable(name = "ochat_user_space", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "space_id", referencedColumnName = "id")})
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "spaceUsers")
     public Set<SpaceEntity> getUserSpaces() {
         return userSpaces;
     }

@@ -34,8 +34,8 @@ public class WebSocketEventListener {
             LOGGER.info("User Disconnected : " + username);
 
             MessageEntity message = new MessageEntity();
-            message.setType(MessageEntity.MessageType.LEAVE);
-            message.setSender(username);
+//            message.setType(MessageEntity.MessageType.LEAVE);
+//            message.setSender(username);
 
             messagingTemplate.convertAndSend("/chat/general", message);
         }

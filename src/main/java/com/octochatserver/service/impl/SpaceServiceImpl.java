@@ -13,6 +13,16 @@ public class SpaceServiceImpl implements SpaceService {
     SpaceDAO spaceDAO;
 
     @Override
+    public SpaceEntity get(int id) {
+        return spaceDAO.getById(id);
+    }
+
+    @Override
+    public SpaceEntity getByName(String name) {
+        return spaceDAO.getByName(name);
+    }
+
+    @Override
     public SpaceEntity save(SpaceEntity space) {
         return spaceDAO.save(space);
     }

@@ -1,12 +1,12 @@
 package com.octochatserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,9 +19,10 @@ public class SpaceEntity {
     private int ownerId;
     private Timestamp registeredDate;
     private Timestamp modifiedDate;
-    private Set<UserEntity> spaceUsers;
+    private Set<UserEntity> spaceUsers = new HashSet<>();
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -64,8 +65,9 @@ public class SpaceEntity {
         this.modifiedDate = modifiedDate;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "userSpaces")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonBackReference
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @JoinTable(name = "ochat_user_space", joinColumns = {@JoinColumn(name = "space_id", referencedColumnName = "id")}, inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
     public Set<UserEntity> getSpaceUsers() {
         return spaceUsers;
     }
